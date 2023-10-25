@@ -8,6 +8,7 @@ Usage:
 """
 
 import sys
+import time
 
 from itertools import chain, combinations
 from collections import defaultdict
@@ -68,41 +69,98 @@ def runApriori(data_iter, minSupport):
 
     freqSet = defaultdict(int)
     largeSet = dict()
+    closedSet = dict()
+    canNumSetBf = [len(itemSet)]
+    canNumSetAf = []
     # Global dictionary which stores (key=n-itemSets,value=support)
     # which satisfy minSupport
 
     oneCSet= returnItemsWithMinSupport(itemSet, transactionList, minSupport, freqSet)
+    canNumSetAf.append(len(oneCSet))
     
     currentLSet = oneCSet
     k = 2
     while currentLSet != set([]):    
         largeSet[k - 1] = currentLSet
         currentLSet = joinSet(currentLSet, k)
+        canNumSetBf.append(len(currentLSet))
         currentCSet= returnItemsWithMinSupport(
             currentLSet, transactionList, minSupport, freqSet
         )
+        # closedSet = closedSet.union(checkClosed(largeSet[k-1], currentCSet, freqSet))
+        closedSet[k - 1] = checkClosed(largeSet[k-1], currentCSet, freqSet)
+        canNumSetAf.append(len(currentCSet))
         currentLSet = currentCSet
         k = k + 1
-    
 
     def getSupport(item):
         """local function which Returns the support of an item"""
         return float(freqSet[item]) / len(transactionList)
 
-    print(largeSet)
-
     toRetItems = []
     for key, value in largeSet.items():
         toRetItems.extend([(tuple(item), getSupport(item)) for item in value])
+
+    closedItems = []
+    for key, value in closedSet.items():
+        closedItems.extend([(tuple(item), getSupport(item)) for item in value])
+
+    writeTask1_1(toRetItems)
+    writeTask1_2(canNumSetBf, canNumSetAf)
+    writeTask2(closedItems)
 
     return toRetItems
 
 
 def printResults(items):
-    """prints the generated itemsets sorted by support """
+    """prints the generated itemsets sorted by support"""
     for item, support in sorted(items, key=lambda x: x[1]):
         print("item: %s , %.3f" % (str(item), support))
 
+def writeTask1_1(items):
+    """write the generated itemsets sorted by support to file"""
+    write_line = ''
+    for itemset, support in sorted(items, key=lambda x: x[1], reverse = True):
+        item_str = ""
+        for item in itemset:
+            item_str = item_str + str(item) + ','
+        item_str = item_str.strip(',')
+        write_line += "{}\t{}\n".format(round(support * 100), item_str)
+    with open('./result_file1.txt', mode = 'w') as write_file:
+        write_file.write(write_line)
+
+def writeTask1_2(canNumSetBf, canNumSetAf):
+    write_line = str(sum(canNumSetAf)) + '\n'
+    for idx in range(len(canNumSetBf)):
+        write_line += "%s\t%s\t%s\n" %(str(idx + 1), str(canNumSetBf[idx]), str(canNumSetAf[idx]))
+    with open('./result_file2.txt', mode = 'w') as write_file:
+        write_file.write(write_line)
+
+def checkClosed(canLevelPre, canLevelCur, freqSet):
+    closedSetPre = canLevelPre
+    # if the candidate in current level is empty, end the function
+    # if len(canLevelCur) != 0:
+    for item_pre in canLevelPre:
+        # print(value)
+        for item_cur in canLevelCur:
+            if item_pre.issubset(item_cur) \
+                and freqSet[item_pre] <= freqSet[item_cur]:
+                closedSetPre.remove(item_pre)
+
+    # print(closedSetPre)
+    return closedSetPre
+
+def writeTask2(closedItems):
+    write_line = str(len(closedItems)) + '\n'
+    for itemset, support in sorted(closedItems, key=lambda x: x[1], reverse = True):
+        item_str = ""
+        for item in itemset:
+            item_str = item_str + str(item) + ','
+        item_str = item_str.strip(',')
+        # write_line += "%.1f\t{%s}\n" %(support, item_str)
+        write_line += "{}\t{}\n".format(round(support * 100) , item_str)
+    with open('./result_file3.txt', mode = 'w') as write_file:
+        write_file.write(write_line)
 
 def to_str_results(items):
     """prints the generated itemsets sorted by support"""
@@ -150,6 +208,10 @@ if __name__ == "__main__":
 
     minSupport = options.minS
 
+    start_time = time.process_time()
     items = runApriori(inFile, minSupport)
+    end_time = time.process_time()
 
-    printResults(items)
+    # printResults(items)
+
+    print("Execution Time: %f sec" %(end_time - start_time))
