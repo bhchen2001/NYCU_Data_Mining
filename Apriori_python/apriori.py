@@ -65,43 +65,6 @@ def runApriori_1(data_iter, case, minSupport):
 
     freqSet = defaultdict(int)
     largeSet = dict()
-    # Global dictionary which stores (key=n-itemSets,value=support)
-    # which satisfy minSupport
-
-    oneCSet= returnItemsWithMinSupport(itemSet, transactionList, minSupport, freqSet)
-    
-    currentLSet = oneCSet
-    k = 2
-    while currentLSet != set([]):    
-        largeSet[k - 1] = currentLSet
-        currentLSet = joinSet(currentLSet, k)
-        currentCSet= returnItemsWithMinSupport(
-            currentLSet, transactionList, minSupport, freqSet
-        )
-        currentLSet = currentCSet
-        k = k + 1
-
-    def getSupport(item):
-        """local function which Returns the support of an item"""
-        return float(freqSet[item]) / len(transactionList)
-
-    toRetItems = []
-    for key, value in largeSet.items():
-        toRetItems.extend([(tuple(item), getSupport(item)) for item in value])
-    
-    end_time = time.process_time()
-
-    writeTask1_1(toRetItems, case, minSupport)
-    exe_time = end_time - start_time
-
-    return exe_time
-
-def runApriori_2(data_iter, case, minSupport):
-    start_time = time.process_time()
-    itemSet, transactionList = getItemSetTransactionList(data_iter)
-
-    freqSet = defaultdict(int)
-    largeSet = dict()
     canNumSetBf = [len(itemSet)]
     canNumSetAf = []
     # Global dictionary which stores (key=n-itemSets,value=support)
@@ -130,15 +93,16 @@ def runApriori_2(data_iter, case, minSupport):
     toRetItems = []
     for key, value in largeSet.items():
         toRetItems.extend([(tuple(item), getSupport(item)) for item in value])
-
+    
     end_time = time.process_time()
 
+    writeTask1_1(toRetItems, case, minSupport)
     writeTask1_2(canNumSetBf, canNumSetAf, case, minSupport)
     exe_time = end_time - start_time
 
     return exe_time
 
-def runApriori_3(data_iter, case, minSupport):
+def runApriori_2(data_iter, case, minSupport):
     start_time = time.process_time()
     itemSet, transactionList = getItemSetTransactionList(data_iter)
 
@@ -197,14 +161,14 @@ def writeTask1_1(items, case, sup):
             item_str = item_str + str(item) + ','
         item_str = item_str.strip(',')
         write_line += "%.1f\t{%s}\n" %(support * 100, item_str)
-    with open('./' + case + '_task1_1_' + 'sup_' + str(sup * 100) + '.txt', mode = 'w') as write_file:
+    with open('../result/' + 'step2' + '_task1_' + case + '_' + str(sup * 100) + '_result1.txt', mode = 'w') as write_file:
         write_file.write(write_line)
 
 def writeTask1_2(canNumSetBf, canNumSetAf, case, sup):
     write_line = str(sum(canNumSetAf)) + '\n'
     for idx in range(len(canNumSetBf)):
         write_line += "%s\t%s\t%s\n" %(str(idx + 1), str(canNumSetBf[idx]), str(canNumSetAf[idx]))
-    with open('./' + case + '_task1_2_' + 'sup_' + str(sup * 100) + '.txt', mode = 'w') as write_file:
+    with open('../result/' + 'step2' + '_task1_' + case + '_' + str(sup * 100) + '_result2.txt', mode = 'w') as write_file:
         write_file.write(write_line)
 
 def checkClosed(canLevelPre, canLevelCur, freqSet):
@@ -231,7 +195,7 @@ def writeTask2(closedItems, case, sup):
         item_str = item_str.strip(',')
         # write_line += "%.1f\t{%s}\n" %(support, item_str)
         write_line += "%.1f\t{%s}\n" %(support * 100 , item_str)
-    with open('./' + case + '_task2_' + 'sup_' + str(sup * 100) + '.txt', mode = 'w') as write_file:
+    with open('../result/' + 'step2' + '_task2_' + case + '_' + str(sup * 100) + '_result1.txt', mode = 'w') as write_file:
         write_file.write(write_line)
 
 def to_str_results(items):
@@ -291,9 +255,7 @@ if __name__ == "__main__":
         exe_time = runApriori_1(inFile, case, minSupport)
     elif task == 2:
         exe_time = runApriori_2(inFile, case, minSupport)
-    elif task == 3:
-        exe_time = runApriori_3(inFile, case, minSupport)
 
     # printResults(items)
 
-    print("Execution Time: %f sec" %(exe_time))
+    print("Execution Time (%s, task: %s, sup: %s): %f sec" %(case, task, minSupport, exe_time))
