@@ -42,6 +42,9 @@
 \usepackage{xcolor}
 \usepackage{multirow}
 \usepackage{cite} %Imports biblatex package
+\usepackage[ruled,linesnumbered]{algorithm2e}
+\newcommand\mycommfont[1]{\normalsize\ttfamily\textcolor{blue}{#1}}
+\SetCommentSty{mycommfont}
 % \usepackage[backend=bibtex,bibencoding=ascii,style=authoryear,sorting=none]{bibtex}
 % \addbibresource{reference.bib}
 % setup the margin
@@ -80,6 +83,7 @@
 
 \titleformat{\section}{\Large\raggedright\bfseries}{}{0em}{}[\titlerule] % Section formatting
 \titleformat{\subsection}{\large\raggedright\bfseries}{}{0em}{}
+\titleformat{\subsubsection}{\normalsize\raggedright\bfseries}{}{0em}{}
 
 % \pagestyle{scrheadings} % Print the headers and footers on all pages
 
@@ -299,9 +303,9 @@ The computation time of task1 is shown as follows
                 & 0.2          & 3823.43 \\  \cline{2-3}
                 & 0.5          & 1111.96 \\  \cline{1-3}
                 C & \multirow[t]{3}{*}{}
-                0.1            & 6074.08 \\  \cline{2-3}
-                & 0.2          & 1994.86 \\  \cline{2-3}
-                & 0.3          & 729.53 \\ 
+                1.0            & 6074.08 \\  \cline{2-3}
+                & 2.0          & 1994.86 \\  \cline{2-3}
+                & 3.0          & 729.53 \\ 
         \hline
     \end{tabular}
   \caption{Computation Time of Task1}
@@ -394,9 +398,9 @@ The computation time of task2 and the comparison with task1 is shown as follows:
                 & 0.2          & 3730.72 & 97.57\% \\  \cline{2-4}
                 & 0.5          & 1137.05 & 102.25\% \\  \cline{1-4}
                 C & \multirow[t]{3}{*}{}
-                0.1            & 6007.42 & 98.90\% \\  \cline{2-4}
-                & 0.2          & 1962.21 & 98.36\% \\  \cline{2-4}
-                & 0.3          & 717.23 & 98.31\% \\ 
+                1.0            & 6007.42 & 98.90\% \\  \cline{2-4}
+                & 2.0          & 1962.21 & 98.36\% \\  \cline{2-4}
+                & 3.0          & 717.23 & 98.31\% \\ 
         \hline
     \end{tabular}
   \caption{Computation Time of Task2}
@@ -417,6 +421,9 @@ is nearly negligible.
 
 \section{Step3: Eclat Algorithm}
 
+\begingroup
+\raggedright
+
 For task3, I choose Eclat mining algorithm to mine the frequent itemsets.
 In this section, I will first introduce the Eclat algorithm,
 then explain its advantages compared to Apriori algorithm,
@@ -424,12 +431,199 @@ finally analysis the experiment result.
 
 \subsection{Introduction}
 
-Eclat algorithm is an depth-first-based association mining algorithm 
+Eclat algorithm\cite{zaki1997new}\cite{borgelt2012frequent} is a depth-first-based association mining algorithm 
 using the vertical database, instead of calculating the support of each itemset by
 traversing the whole trasaction list, Eclat algorithm uses the intersection of $TID\_Sets$,
-which results in more efficient computation.
+which results in more efficient computation. \\
+% The concept of my Eclat algorithm is based on \cite{github}, 
+% which implement the Eclat algorithm with binary encoding database.
 
 \subsection{Program Flow}
+
+The pueudocode of Eclat algorithm is shown as follows:
+
+\begin{algorithm}
+  \caption{My Eclat Algorithm Overview}
+  % \SetKwData{Left}{left}\SetKwData{This}{this}\SetKwData{Up}{up}
+  % \SetKwFunction{Union}{Union}
+  \SetKwFunction{EclatRecursive}{EclatRecursive}
+  \SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+
+  \Input{Transaction list $T$, minimum support $Sup_{min}$}
+  \Output{Frequent itemsets $F$}
+  \BlankLine
+  \tcp{build the vertical database $VDB$ from $T$}
+  \For{$tran$ in $T$}{
+    \For{$item$ in $tran$}{
+      append $tran$ to $VDB[item]$
+    }
+  }
+  \tcp{get the frequent 1-itemsets $F_1$ from $VDB$}
+  \For{$item$ in $VDB$}{
+    \If{$|VDB[item]| \geq Sup_{min}$}{
+      append $item$ to $F_1$
+    }
+  }
+  \tcp{mine the frequent itemsets recursively}
+  $F = []$ \\
+  \For{$item$ in $F_1$}{
+    \EclatRecursive{$item$, $VDB[item]$, $idx(item)$}
+  }
+\end{algorithm}
+
+First the vertical database $VDB$ will be built from the trasaction list $T$,
+then the frequent 1-itemsets $F_1$ will be generated from $VDB$.
+Finally, the frequent itemsets will be mined recursively by \emph{EclatRecursive} function.
+Why we need to build $F_1$ before calling \emph{EclatRecursive} function will be discussed later.\\
+
+The following algorithm represents the \emph{EclatRecursive} function:
+
+\begin{algorithm}
+  \caption{EclatRecursive Function}
+  \SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+
+  \Input{frequent itemset $i$, tid set $SET_{i}$, index of $i$'s last item $IDX_{i}$}
+  \BlankLine
+  \For{$j\leftarrow IDX_{i} + 1$ \KwTo $|F_1|$}{
+    $SET_{ij} = SET_i \cap VDB[j]$ \\
+    \If{$|SET_{ij}| \geq Sup_{min}$}{
+      $i_{new} = i \cup F_1[j]$ \\
+      append $i_{new}$ to $F$ \\
+      \EclatRecursive{$i_{new}$, $SET_{ij}$, $j$}
+    }
+  }
+\end{algorithm}
+
+The \emph{EclatRecursive} function will traverse $F_1$ from $i$'s last item.
+For each item $F_1[j]$, the function will first intersect its' tid list $VDB[j]$
+and $SET_{i}$, the result $SET_{ij}$ represents the transactions that contain both $i$ and $F_1[j]$.
+If the size of $SET_{ij}$, which means the new itemset's support, is larger than $Sup_{min}$,
+then the union of $i$ and $F_1[j]$, $i_{new}$, will become the new frequent itemset.
+Finally the \emph{EclatRecursive} function will be called recursively
+to find the new frequent with $i_{new}$ as the prefix. \\
+
+\subsection{Eclat Algorithm vs. Apriori}
+
+The differences between Eclat algorithm and Apriori algorithm are the approach of
+searching the frequent itemsets and the data structure of the database. \\
+For Apriori algorithm, the frequent itemsets will be searched by breadth-first search (BFS),
+which lead to the high-cost computation of counting support. 
+By using vertical database and depth-first search (DFS), 
+Eclat algorithm can reduce the computation time of counting support 
+even the candidate number is larger than Apriori.
+
+\subsubsection{Time Complexity in the Worse Case}\label{time_complexity}
+
+Given a dataset with $ntrans$ transaction, $nitems$ items and average transaction length $tlen$,
+we can analyze the complexity of Eclat algorithm and Apriori.
+Initially, the time complexity of both algorithms are $O(ntrans \times tlen)$ for building
+the itemset list and vertical database. \\
+By searching frequent itemsets by Apriori, 
+the time complexity is $O(nitems \times ntrans \times tlen)$,
+since in the worse case, there will have $nitems$ iterations, and for each iteration,
+Apriori will traverse the whole trasaction list ($O(ntrans \times tlen)$) 
+to calculate the support for corresponding itemsets. \\
+For Eclat algorithm, the time complexity is $O(2^{nitems} - 1) \times O(ntrans)$
+searching the frequent itemsets, since in the worst case, the algorithm will perform
+intersection operation $2^{nitems} -1$ times, and for each intersection operation,
+the time complexity will be $O(ntrans)$ in the worse case. \\
+
+\subsubsection{Experiment}
+
+The computation time of task3 and the comparison with task1 is shown as follows:
+
+\begin{table}[ht]
+  \centering
+    \begin{tabular}{|*{4}{c|}}
+        \hline
+    Dataset    & Minimum Support (\%)  & Computation Time (sec) & Speedup Percentage (\%)  \\
+        \hline
+    \multirow[t]{3}{*}{A}           
+                & \multirow[t]{3}{*}{}
+                0.2            & 2.92 & 97.96\% \\  \cline{2-4}
+                & 0.5          & 0.19 & 97.17\% \\  \cline{2-4}
+                & 1.0          & 0.06 & 97.84\% \\  \cline{1-4}         
+                B & \multirow[t]{3}{*}{}
+                0.15            & 67.09 & 99.02\% \\  \cline{2-4}
+                & 0.2          & 40.32 & 98.94\% \\  \cline{2-4}
+                & 0.5          & 6.93 & 99.37\% \\  \cline{1-4}
+                C & \multirow[t]{3}{*}{}
+                1.0            & 65.37 & 98.92\% \\  \cline{2-4}
+                & 2.0          & 27.88 & 98.60\% \\  \cline{2-4}
+                & 3.0          & 13.61 & 98.13\% \\ 
+        \hline
+    \end{tabular}
+  \caption{Computation Time of Step3}
+\end{table}
+
+As we can see above, the computation time of each dataset and minimums support setting
+is much faster than Apriori algorithm. By checking the \emph{result2.txt} file,
+we can see that the with larger candidate number before pruning,
+the speedup percentage will get higher, which means the support counting method of Eclat
+is more efficient than Apriori. \\
+
+\subsection{Scalability of Eclat Algorithm}
+
+For testing the scalability of Eclat algorithm, I executing the Eclat program with
+fixed minimum support and datset with different $ntrans$, the result is shown as follows:
+
+\newpage
+
+\begin{table}[h]
+  \centering
+    \begin{tabular}{|*{4}{c|}}
+        \hline
+    Minimum Support (\%) & Dataset & Computation Time (sec) \\
+        \hline
+    \multirow[t]{3}{*}{}           
+                0.1& \multirow[t]{3}{*}{}
+                A            & 1407.57 \\  \cline{2-3}
+                & B          & 124.47 \\  \cline{2-3}
+                & C          & 2864.68 \\  \cline{1-3}    
+                0.15& \multirow[t]{3}{*}{}
+                A            &  2.94 \\  \cline{2-3}
+                & B          & 67.09 \\  \cline{2-3}
+                & C          & 1061.82 \\  \cline{1-3}         
+                0.2 & \multirow[t]{3}{*}{}
+                A            & 2.92 \\  \cline{2-3}
+                & B          & 40.32 \\  \cline{2-3}
+                & C          & 656.96 \\  \cline{1-3}
+                0.5 & \multirow[t]{3}{*}{}
+                A            & 0.19 \\  \cline{2-3}
+                & B          & 6.93 \\  \cline{2-3}
+                & C          & 116.97 \\  \cline{1-3}
+                1.0 & \multirow[t]{3}{*}{}
+                A            & 0.06 \\  \cline{2-3}
+                & B          & 3.81 \\  \cline{2-3}
+                & C          & 65.37 \\  \cline{1-3}
+                0.2 & \multirow[t]{3}{*}{}
+                A            & 0.02 \\  \cline{2-3}
+                & B          & 1.83 \\  \cline{2-3}
+                & C          & 27.88 \\  \cline{1-3}
+                0.3 & \multirow[t]{3}{*}{}
+                A            & 0.01 \\  \cline{2-3}
+                & B          & 0.92 \\  \cline{2-3}
+                & C          & 13.61 \\ 
+        \hline
+    \end{tabular}
+  \caption{Computation Time of Scalability Test}
+\end{table}
+
+It's obviously to observe that the computation time will increase considerablely
+when the number of transaction increases. Since the $ntrans$ will affect the computation time
+of building the vertical database and the length of each itemset's tid list, which will lead to
+longer computation time. \\
+The other observation is that with $Sup_{min} = 0.1\%$, the computation time of dataset A
+is abnormally large, so the following section will discuss this phenomenon.
+
+\subsection{Disadvantages of Eclat Algorithm}
+
+Although Eclat algorithm is more efficient than Apriori algorithm,
+we can still observe the restriction of Eclat algorithm in \ref{time_complexity},
+since there might have 
+
+
+\endgroup
 
 % \begin{figure*}[tbh]
 %     \includegraphics[width=\textwidth]{"./student_forum/SAGAN_flow.pdf"}
@@ -454,7 +648,7 @@ which results in more efficient computation.
 %     \label{fig2}
 % \end{figure}
 
-\bibliographystyle{IEEEtran} % We choose the "plain" reference style
+\bibliographystyle{unsrt} % We choose the "plain" reference style
 \bibliography{reference} % Entries are in the "references.bib" file
 
 \end{document}
