@@ -1,0 +1,460 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Stylish Curriculum Vitae
+% LaTeX Template
+% Version 1.1 (September 10, 2021)
+%
+% This template originates from:
+% https://www.LaTeXTemplates.com
+%
+% Authors:
+% Stefano (https://www.kindoblue.nl)
+% Vel (vel@LaTeXTemplates.com)
+%
+% License:
+% CC BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% !TEX program = xelatex
+\documentclass[a4paper, oneside, final, 12pt]{scrartcl} % Paper options using the scrartcl class
+
+\usepackage{fontspec} % for other font
+\usepackage{xeCJK} % for chinese font
+\usepackage{hyperref} % for hyper web link
+\usepackage{multirow} % for tabular table in learning progress
+\usepackage{graphicx} % for image insersion
+\usepackage[export]{adjustbox} % for image frame
+\usepackage{setspace}
+\usepackage{array}
+% Define typographic struts, as suggested by Claudio Beccari
+%   in an article in TeX and TUG News, Vol. 2, 1993.
+\usepackage{mathptmx}
+\usepackage{scrlayer-scrpage} % Provides headers and footers configuration
+\usepackage{titlesec} % Allows creating custom \section's
+\usepackage{marvosym} % Allows the use of symbols
+\usepackage{tabularx,colortbl} % Advanced table configurations
+% \usepackage{ebgaramond} % Use the EB Garamond font
+\usepackage{microtype} % To enable letterspacing
+\usepackage{pdfpages} % for showing pdf
+\usepackage{pdflscape}
+\usepackage{enumitem}
+\usepackage{subcaption}
+\usepackage{listings}   % highlight the python code
+\usepackage{xcolor}
+\usepackage{multirow}
+\usepackage{cite} %Imports biblatex package
+% \usepackage[backend=bibtex,bibencoding=ascii,style=authoryear,sorting=none]{bibtex}
+% \addbibresource{reference.bib}
+% setup the margin
+\usepackage[top=1cm, bottom=1cm, right=2cm, left=2cm]{geometry}
+
+% set the style of listing code
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=true,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+% set chinese and english font
+\setmainfont{Times New Roman}
+\setCJKmainfont[AutoFakeBold=true, AutoFakeSlant=true]{標楷體}
+
+\titleformat{\section}{\Large\raggedright\bfseries}{}{0em}{}[\titlerule] % Section formatting
+\titleformat{\subsection}{\large\raggedright\bfseries}{}{0em}{}
+
+% \pagestyle{scrheadings} % Print the headers and footers on all pages
+
+% enable bold and slant chinese font
+% \xeCJKsetup{AutoFakeBold=true, AutoFakeSlant=true}
+
+% set the space at the front of paragraph
+\setlength{\parindent}{2em}
+
+% disable page number
+\pagenumbering{gobble}
+
+\newcommand{\gray}{\rowcolor[gray]{.90}} % Custom highlighting for the work experience and education sections
+\newcommand{\Tstrut}{\rule{0pt}{2.6ex}}         % = `top' strut
+\newcommand{\Bstrut}{\rule[-0.9ex]{0pt}{0pt}}   % = `bottom' strut
+\newcommand{\Tstruth}{\rule{0pt}{4ex}}         % = `top' strut for header
+\newcommand{\Bstruth}{\rule[-2.5ex]{0pt}{0pt}}   % = `bottom' strut for header
+
+%----------------------------------------------------------------------------------------
+%	FOOTER SECTION
+%----------------------------------------------------------------------------------------
+
+% \renewcommand{\headfont}{\normalfont\rmfamily\scshape} % Font settings for footer
+
+% \cofoot{
+% \fontsize{12.5}{17}\selectfont % Letter spacing and font size
+
+% \textls[150]{123 Broadway {\large\textperiodcentered} City {\large\textperiodcentered} Country 12345}\\ % Your mailing address
+% {\Large\Letter} \textls[150]{john@smith.com \ {\Large\Telefon} (000) 111-1111} % Your email address and phone number
+% }
+
+%----------------------------------------------------------------------------------------
+\begin{document}
+
+%----------------------------------------------------------------------------------------
+%	HEADER SECTION
+%----------------------------------------------------------------------------------------
+
+
+\begin{center}
+    {\fontsize{18}{30}\textbf{Data Mining Assignment 1 \\ Association Rule Mining}}
+\end{center}
+
+\begin{center}
+  Bo-Han Chen (陳柏翰) \\
+  Student ID:312551074 \\
+  bhchen312551074.cs12@nycu.edu.tw
+\end{center}
+
+\section{Experiment Environment \& Usage}
+
+\begingroup
+\raggedright
+
+\subsection{Environment}
+
+The Experiment environment is based on the work station of Information Technology Center,
+the details are as follows:
+\begin{itemize}
+  \item OS: CentOS Stream release 8
+  \item Hardware: Intel(R) Xeon(R) Gold 6126 CPU @ 2.60GHz
+  \item Python 3.9.17
+  \item The computation time is recorded by \emph{time.process\_time()} function
+\end{itemize}
+
+\subsection{Usage}
+
+The command for executing the program of step2 \& 3 is shown as follows:
+
+\begin{lstlisting}[language=bash]
+  # step2
+  python apriori.py -f [inputFile] -t [task] -s [support]
+  # step3
+  python myEclat.py -f [inputFile] -s [support]
+\end{lstlisting}
+
+I wrote a script for running the association rule mining program,
+whcich can run the algorithm with all task/support/dataset options,
+and the execution time will be recorded in the log file named \emph{result.log}.
+Take the script of step2 for example, the script 
+\emph{run.sh} is shown as follows:
+
+\begin{lstlisting}[language=bash]
+  #!/bin/bash
+  dataset_folder="../dataset"
+  log_file_path="../result"
+  declare -a dataset_arr=("datasetA.data" "datasetB.data" "datasetC.data")
+  declare -a task_arr=(1 2)
+  declare -a sup_arrA=(0.2 0.5 0.1)
+  declare -a sup_arrB=(0.5 0.2 0.5)
+  declare -a sup_arrC=(0.1 0.2 0.3)
+
+  for task in "${task_arr[@]}"
+  do
+      for sup_idx in 0 1 2
+      do
+          for dataset in "${dataset_arr[@]}"
+          do
+              if [ $dataset == 'datasetA.data' ]
+              then
+                  sup_arr=("${sup_arrA[@]}")
+              elif [ $dataset == 'datasetB.data' ]
+              then
+                  sup_arr=("${sup_arrB[@]}")
+              else [ $dataset == 'datasetC.data' ]
+                  sup_arr=("${sup_arrC[@]}")
+              fi
+              data_path=$dataset_folder/$dataset
+              sup="${sup_arr[$sup_idx]}"
+              echo "running $dataset on task $task with support: $sup"
+              time python apriori.py -f $data_path -t $task -s $sup | tee -a $log_file_path/result.log
+          done
+      done
+  done
+\end{lstlisting}
+
+The usage of \emph{run.sh}:
+
+\begin{lstlisting}[language=bash]
+  # executing run.sh script
+  ./run.sh
+\end{lstlisting}
+
+\endgroup
+
+\section{Step2: Apriori Algorithm}
+
+\subsection{Task1: Mining Frequent Itemsets}
+
+\begingroup
+\raggedright
+In this part, I add two functions \emph{writeTask1\_1} and \emph{writeTask1\_2} to
+write the frequent itemsets to the txt file based on the original Apriori algorithm. 
+The code is shown as follows:
+
+\begin{lstlisting}[language=Python]
+  def runApriori_1(data_iter, case, minSupport):
+    itemSet, transactionList = getItemSetTransactionList(data_iter)
+
+    freqSet = defaultdict(int)
+    largeSet = dict()
+    # initialize the number of candidate itemset before and after pruning
+    canNumSetBf = [len(itemSet)]
+    canNumSetAf = []
+
+    oneCSet= returnItemsWithMinSupport(itemSet, transactionList, minSupport, freqSet)
+    canNumSetAf.append(len(oneCSet))
+    
+    currentLSet = oneCSet
+    k = 2
+    while currentLSet != set([]):    
+        largeSet[k - 1] = currentLSet
+        currentLSet = joinSet(currentLSet, k)
+        # get the number of candidate itemset before pruning
+        canNumSetBf.append(len(currentLSet))
+        currentCSet= returnItemsWithMinSupport(
+            currentLSet, transactionList, minSupport, freqSet
+        )
+        # get the number of candidate itemset after pruning
+        canNumSetAf.append(len(currentCSet))
+        currentLSet = currentCSet
+        k = k + 1
+    .
+    .
+    .
+    # write the frequent itemsets and number of candidate to file
+    writeTask1_1(toRetItems, case, minSupport)
+    writeTask1_2(canNumSetBf, canNumSetAf, case, minSupport)
+\end{lstlisting}
+
+In \emph{writeTask1\_1} function, the frequent itemsets will be 
+sorted by support and be written to the file.
+
+\begin{lstlisting}[language=Python]
+  def writeTask1_1(items, case, sup):
+    """write the generated itemsets sorted by support to file"""
+    write_line = ''
+    for itemset, support in sorted(items, key=lambda x: x[1], reverse = True):
+        item_str = ""
+        for item in itemset:
+            item_str = item_str + str(item) + ','
+        item_str = item_str.strip(',')
+        write_line += "%.1f\t{%s}\n" %(support * 100, item_str)
+    with open('../result/' + 'step2' + '_task1_' + case + '_' + str(sup) + '_result1.txt', mode = 'w') as write_file:
+        write_file.write(write_line)
+\end{lstlisting}
+
+In \emph{writeTask1\_2} function, the number of candidate itemsets before and after pruning
+will be written to the file.
+
+\begin{lstlisting}[language=Python]
+  def writeTask1_2(canNumSetBf, canNumSetAf, case, sup):
+    """write the number of candidate itemsets before and after pruning to file"""
+    write_line = str(sum(canNumSetAf)) + '\n'
+    for idx in range(len(canNumSetBf)):
+        write_line += "%s\t%s\t%s\n" %(str(idx + 1), str(canNumSetBf[idx]), str(canNumSetAf[idx]))
+    with open('../result/' + 'step2' + '_task1_' + case + '_' + str(sup) + '_result2.txt', mode = 'w') as write_file:
+        write_file.write(write_line)
+\end{lstlisting}
+
+The computation time of task1 is shown as follows 
+(concluded from the \emph{result.log} file):
+
+\begin{table}[ht]
+  \centering
+    \begin{tabular}{|*{3}{c|}}
+        \hline
+    Dataset    & Minimum Support (\%)  & Computation Time (sec)  \\
+        \hline
+    \multirow[t]{3}{*}{A}           
+                & \multirow[t]{3}{*}{}
+                0.2            & 143.79 \\  \cline{2-3}
+                & 0.5          & 6.72 \\  \cline{2-3}
+                & 1.0          & 2.79 \\  \cline{1-3}         
+                B & \multirow[t]{3}{*}{}
+                0.15            & 6861.15 \\  \cline{2-3}
+                & 0.2          & 3823.43 \\  \cline{2-3}
+                & 0.5          & 1111.96 \\  \cline{1-3}
+                C & \multirow[t]{3}{*}{}
+                0.1            & 6074.08 \\  \cline{2-3}
+                & 0.2          & 1994.86 \\  \cline{2-3}
+                & 0.3          & 729.53 \\ 
+        \hline
+    \end{tabular}
+  \caption{Computation Time of Task1}
+\end{table}
+
+As we can see above, the computation time increases considerablely
+when the minimum support ($min\_sup$) decreases. Take dataset A for example,
+and the computation time of $min\_sup = 0.5\%$ is $95\%$ faster than $min\_sup = 0.2\%$,
+and the computation time of $min\_sup = 1.0\%$ is $98\%$ faster than $min\_sup = 0.2\%$. \\
+To explain this phenomenon, we can analyze \emph{result2.txt} file to find out the reason.
+Comparing the number of candidate k-itemsets ($L_k$) of each iteration 
+among $min\_sup = 0.5\%$ and $min\_sup = 0.2\%$,
+we can observe that with higher minimum support, 
+fewer frequent k-itemsets ($F_k$) will remain in each iteration,
+which leads to fewer procedure to calculate the support of itemsets in $L_{k+1}$.
+
+\endgroup
+
+\subsection{Task2: Mining All Frequent Closed Itemsets}
+
+\begingroup
+\raggedright
+
+In this task, I first check whether the frequent itemset is closed or not by \emph{checkClosed}
+function in each iteration, 
+and then write the closed frequent itemsets to the file by \emph{writeTask2}.
+
+\begin{lstlisting}[language=Python]
+  def runApriori_2(data_iter, case, minSupport):
+    itemSet, transactionList = getItemSetTransactionList(data_iter)
+    ...
+    k = 2
+    # save the closed frequent itemsets in each iteration
+    closedSet = dict()
+    while currentLSet != set([]):    
+        largeSet[k - 1] = currentLSet
+        currentLSet = joinSet(currentLSet, k)
+        currentCSet= returnItemsWithMinSupport(
+            currentLSet, transactionList, minSupport, freqSet
+        )
+        # check whether the frequent itemset is closed or not
+        # passing the frequent itemset in last iteration and current iteration
+        closedSet[k - 1] = checkClosed(largeSet[k-1], currentCSet, freqSet)
+        currentLSet = currentCSet
+        k = k + 1
+    ...
+    # write the closed frequent itemsets to file
+    closedItems = []
+    for key, value in closedSet.items():
+        closedItems.extend([(tuple(item), getSupport(item)) for item in value])
+
+    writeTask2(closedItems, case, minSupport)
+\end{lstlisting}
+
+In \emph{checkClosed} function, each itemset of $F_{k-1}$ will be compared with
+each itemset of $F_{k}$, if the latter one is a superset of the former and
+the support of the latter is larger or equal (equal, precisely) to the former one, 
+then we can say that itemset is not closed.
+
+\begin{lstlisting}[language=Python]
+  def checkClosed(canLevelPre, canLevelCur, freqSet):
+    # first assume that all itemsets of previous iteration are closed
+    closedSetPre = canLevelPre.copy()
+    for item_pre in canLevelPre:
+        for item_cur in canLevelCur:
+            # if item_cur is a superset of item_pre
+            # and the support of item_cur is larger than item_pre
+            # then the latter one is not closed
+            if item_pre.issubset(item_cur) and freqSet[item_pre] <= freqSet[item_cur]:
+                closedSetPre.remove(item_pre)
+                break
+    return closedSetPre
+\end{lstlisting}
+
+The computation time of task2 and the comparison with task1 is shown as follows:
+
+\begin{table}[ht]
+  \centering
+    \begin{tabular}{|*{4}{c|}}
+        \hline
+    Dataset & Minimum Support (\%)  & Computation Time (sec) & Ratio of Computation Time (\%)  \\
+        \hline
+    \multirow[t]{3}{*}{A}           
+                & \multirow[t]{3}{*}{}
+                0.2            & 157.117 & 109.26\% \\  \cline{2-4}
+                & 0.5          & 6.65 & 98.95\% \\  \cline{2-4}
+                & 1.0          & 2.70 & 96.77\% \\  \cline{1-4}         
+                B & \multirow[t]{3}{*}{}
+                0.15            & 7094.64 & 103.40\% \\  \cline{2-4}
+                & 0.2          & 3730.72 & 97.57\% \\  \cline{2-4}
+                & 0.5          & 1137.05 & 102.25\% \\  \cline{1-4}
+                C & \multirow[t]{3}{*}{}
+                0.1            & 6007.42 & 98.90\% \\  \cline{2-4}
+                & 0.2          & 1962.21 & 98.36\% \\  \cline{2-4}
+                & 0.3          & 717.23 & 98.31\% \\ 
+        \hline
+    \end{tabular}
+  \caption{Computation Time of Task2}
+\end{table}
+
+With low $min\_sup$ (take datasetA with $min\_sup = 0.2\%$ for example), 
+we can observe that task2 is obviously
+slower than task1, since there are more itemsets in $F_{k-1}$ and $F_{k}$,
+and there will also have more iteration in the while loop,
+which cause more check procedure in \emph{checkClosed} function.
+Sometimes the computation of task2 is even faser than task1,
+by observing the \emph{result.log} file, we can find out
+such condition is caused by the number of iteration, in other words,
+if there is fewer iteration, the extra computation of \emph{checkClosed}
+is nearly negligible.
+
+\endgroup
+
+\section{Step3: Eclat Algorithm}
+
+For task3, I choose Eclat mining algorithm to mine the frequent itemsets.
+In this section, I will first introduce the Eclat algorithm,
+then explain its advantages compared to Apriori algorithm,
+finally analysis the experiment result.
+
+\subsection{Introduction}
+
+Eclat algorithm is an depth-first-based association mining algorithm 
+using the vertical database, instead of calculating the support of each itemset by
+traversing the whole trasaction list, Eclat algorithm uses the intersection of $TID\_Sets$,
+which results in more efficient computation.
+
+\subsection{Program Flow}
+
+% \begin{figure*}[tbh]
+%     \includegraphics[width=\textwidth]{"./student_forum/SAGAN_flow.pdf"}
+%     \caption{The architecture of SAGAON.}
+%     \label{fig:SAGAON}
+% \end{figure*}
+
+% \begin{figure}[tbh]
+%     \centering
+%     \begin{subfigure}{.5\columnwidth}
+%       \centering
+%       \includegraphics[width=\linewidth]{"./student_forum/station_level_RMSE.pdf"}
+%       \caption{Station-level RMSE}
+%     \end{subfigure}%
+%     \hfill
+%     \begin{subfigure}{.5\columnwidth}
+%       \centering
+%       \includegraphics[width=\linewidth]{"./student_forum/station_level_MAPE.pdf"}
+%       \caption{Station-level MAPE}
+%     \end{subfigure}%
+%     \caption{SAGAON compares with different baseline models.}
+%     \label{fig2}
+% \end{figure}
+
+\bibliographystyle{IEEEtran} % We choose the "plain" reference style
+\bibliography{reference} % Entries are in the "references.bib" file
+
+\end{document}

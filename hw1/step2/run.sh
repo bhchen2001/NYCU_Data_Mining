@@ -3,9 +3,6 @@ dataset_folder="../dataset"
 log_file_path="../result"
 declare -a dataset_arr=("datasetA.data" "datasetB.data" "datasetC.data")
 declare -a task_arr=(1 2)
-# declare -a sup_arrA=(0.002 0.005 0.01)
-# declare -a sup_arrB=(0.0015 0.002 0.005)
-# declare -a sup_arrC=(0.01 0.02 0.03)
 
 declare -a sup_arrA=(0.2 0.5 0.1)
 declare -a sup_arrB=(0.5 0.2 0.5)

@@ -64,6 +64,7 @@ def runApriori_1(data_iter, case, minSupport):
 
     freqSet = defaultdict(int)
     largeSet = dict()
+    # initialize the number of candidate itemset before and after pruning
     canNumSetBf = [len(itemSet)]
     canNumSetAf = []
     # Global dictionary which stores (key=n-itemSets,value=support)
@@ -77,10 +78,12 @@ def runApriori_1(data_iter, case, minSupport):
     while currentLSet != set([]):    
         largeSet[k - 1] = currentLSet
         currentLSet = joinSet(currentLSet, k)
+        # get the number of candidate itemset before pruning
         canNumSetBf.append(len(currentLSet))
         currentCSet= returnItemsWithMinSupport(
             currentLSet, transactionList, minSupport, freqSet
         )
+        # get the number of candidate itemset after pruning
         canNumSetAf.append(len(currentCSet))
         currentLSet = currentCSet
         k = k + 1
@@ -101,6 +104,7 @@ def runApriori_2(data_iter, case, minSupport):
 
     freqSet = defaultdict(int)
     largeSet = dict()
+    # save the closed frequent itemsets in each iteration
     closedSet = dict()
     # Global dictionary which stores (key=n-itemSets,value=support)
     # which satisfy minSupport
@@ -115,7 +119,8 @@ def runApriori_2(data_iter, case, minSupport):
         currentCSet= returnItemsWithMinSupport(
             currentLSet, transactionList, minSupport, freqSet
         )
-        # closedSet = closedSet.union(checkClosed(largeSet[k-1], currentCSet, freqSet))
+        # check whether the frequent itemset is closed or not
+        # passing the frequent itemset in last iteration and current iteration
         closedSet[k - 1] = checkClosed(largeSet[k-1], currentCSet, freqSet)
         currentLSet = currentCSet
         k = k + 1
@@ -148,14 +153,14 @@ def writeTask1_1(items, case, sup):
             item_str = item_str + str(item) + ','
         item_str = item_str.strip(',')
         write_line += "%.1f\t{%s}\n" %(support * 100, item_str)
-    with open('../result/' + 'step2' + '_task1_' + case + '_' + str(sup * 100) + '_result1.txt', mode = 'w') as write_file:
+    with open('../result/' + 'step2' + '_task1_' + case + '_' + str(sup) + '_result1.txt', mode = 'w') as write_file:
         write_file.write(write_line)
 
 def writeTask1_2(canNumSetBf, canNumSetAf, case, sup):
     write_line = str(sum(canNumSetAf)) + '\n'
     for idx in range(len(canNumSetBf)):
         write_line += "%s\t%s\t%s\n" %(str(idx + 1), str(canNumSetBf[idx]), str(canNumSetAf[idx]))
-    with open('../result/' + 'step2' + '_task1_' + case + '_' + str(sup * 100) + '_result2.txt', mode = 'w') as write_file:
+    with open('../result/' + 'step2' + '_task1_' + case + '_' + str(sup) + '_result2.txt', mode = 'w') as write_file:
         write_file.write(write_line)
 
 def checkClosed(canLevelPre, canLevelCur, freqSet):

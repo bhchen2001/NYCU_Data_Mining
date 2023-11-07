@@ -44,6 +44,7 @@ class myEclat():
             if item_sup >= self.abs_sup:
                 self.frequent_itemset.append([item, item_sup/len(self.transactions)])
                 self.item_list.append(item)
+        self.pruning[1][1] = len(self.item_list)
         self.item_list = sorted(self.item_list)
 
     def eclat(self, pre_itemset, pre_transac, last_idx):
