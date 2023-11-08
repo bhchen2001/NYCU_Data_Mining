@@ -61,8 +61,8 @@ class myEclat():
                 self.eclat(new_itemset, transaction_union, idx)
 
     def writeFile(self):
-        fileName1 = self.result_path + 'step3_task1_' + os.path.basename(self.file_path).split('.')[0] + '_' + str(self.min_sup) + '_result1.txt'
-        fileName2 = self.result_path + 'step3_task1_' + os.path.basename(self.file_path).split('.')[0] + '_' + str(self.min_sup) + '_result2.txt'
+        fileName1 = 'step3_task1_' + os.path.basename(self.file_path).split('.')[0] + '_' + str(self.min_sup) + '_result1.txt'
+        fileName2 = 'step3_task1_' + os.path.basename(self.file_path).split('.')[0] + '_' + str(self.min_sup) + '_result2.txt'
         idx = 1
         self.frequent_itemset = sorted(self.frequent_itemset, key=lambda x: x[1], reverse=True)
         with open(fileName1, 'w') as output1:
@@ -77,14 +77,14 @@ class myEclat():
                 idx += 1
 
     def process(self):
+        start = time.process_time()
         self.loadData()
-        start = time.time()
         self.dataPreprocessing()
         self.frequentSingle()
         for idx in range(0, len(self.item_list)):
             self.eclat([self.item_list[idx]], set(self.item_dict[self.item_list[idx]]), idx)
         self.writeFile()
-        end = time.time()
+        end = time.process_time()
         return end - start
 
 if __name__ == "__main__":

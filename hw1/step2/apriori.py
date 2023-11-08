@@ -10,6 +10,7 @@ Usage:
 import sys
 import time
 import os
+import re
 
 from itertools import chain, combinations
 from collections import defaultdict
@@ -153,14 +154,14 @@ def writeTask1_1(items, case, sup):
             item_str = item_str + str(item) + ','
         item_str = item_str.strip(',')
         write_line += "%.1f\t{%s}\n" %(support * 100, item_str)
-    with open('../result/' + 'step2' + '_task1_' + case + '_' + str(sup) + '_result1.txt', mode = 'w') as write_file:
+    with open('step2' + '_task1_' + case + '_' + str(sup) + '_result1.txt', mode = 'w') as write_file:
         write_file.write(write_line)
 
 def writeTask1_2(canNumSetBf, canNumSetAf, case, sup):
     write_line = str(sum(canNumSetAf)) + '\n'
     for idx in range(len(canNumSetBf)):
         write_line += "%s\t%s\t%s\n" %(str(idx + 1), str(canNumSetBf[idx]), str(canNumSetAf[idx]))
-    with open('../result/' + 'step2' + '_task1_' + case + '_' + str(sup) + '_result2.txt', mode = 'w') as write_file:
+    with open('step2' + '_task1_' + case + '_' + str(sup) + '_result2.txt', mode = 'w') as write_file:
         write_file.write(write_line)
 
 def checkClosed(canLevelPre, canLevelCur, freqSet):
@@ -187,7 +188,7 @@ def writeTask2(closedItems, case, sup):
         item_str = item_str.strip(',')
         # write_line += "%.1f\t{%s}\n" %(support, item_str)
         write_line += "%.1f\t{%s}\n" %(support * 100 , item_str)
-    with open('../result/' + 'step2' + '_task2_' + case + '_' + str(sup * 100) + '_result1.txt', mode = 'w') as write_file:
+    with open('step2' + '_task2_' + case + '_' + str(sup) + '_result1.txt', mode = 'w') as write_file:
         write_file.write(write_line)
 
 def to_str_results(items):
@@ -203,8 +204,9 @@ def dataFromFile(fname):
     """Function which reads from the file and yields a generator"""
     with open(fname, "r") as file_iter:
         for line in file_iter:
-            line = line.strip().rstrip(",")  # Remove trailing comma
-            record = frozenset(line.split(","))
+            line = re.sub('^[0-9]* [0-9]* [0-9]* ', '', line)
+            line = line.strip('\n')
+            record = frozenset(line.split(" "))
             yield record
 
 
