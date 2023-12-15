@@ -43,7 +43,7 @@ class FeatureSelector():
         # define the parameter grid of classifier and feature selector
         param_grid = {
             'sfs__k_features': [k],
-            'clf__n_estimators': [6000, 10000],
+            'clf__n_estimators': [6000],
             'clf__max_depth': [3],
             'clf__min_child_weight': [1],
             'clf__learning_rate': [0.001, 0.1],
@@ -85,7 +85,7 @@ class FeatureSelector():
 
         self.best_features = set()
 
-        for round in range(5):
+        for round in range(3):
             print("=====================================")
             print("round: ", round)
 
