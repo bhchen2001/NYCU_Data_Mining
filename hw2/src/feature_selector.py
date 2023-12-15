@@ -12,6 +12,10 @@ class FeatureSelector():
         self.train_data = train_data
         self.train_label = train_label
         self.test_data = test_data
+        self.best_params = None
+        self.best_features = None
+
+        self.fixed_features = ['gcs_motor_apache', 'gcs_verbal_apache', 'ventilated_apache', 'd1_sysbp_min', 'd1_temp_min', 'apache_4a_hospital_death_prob', 'd1_spo2_min', 'd1_mbp_noninvasive_min']
 
     def multi_fidelity_search(self):
         # get the full train data
@@ -34,28 +38,34 @@ class FeatureSelector():
 
         return partial_train_data, partial_train_label
 
-    def selector(self, k = 20):
+    def selector(self, k = 30):
         # option1: use SFS combining with XGBoost
         # define the parameter grid of classifier and feature selector
         param_grid = {
-            'sfs__k_features': [30],
-            'clf__n_estimators': [1000],
+            'sfs__k_features': [k],
+            'clf__n_estimators': [6000, 10000],
             'clf__max_depth': [3],
             'clf__min_child_weight': [1],
-            'clf__learning_rate': [0.001],
+            'clf__learning_rate': [0.001, 0.1],
             'clf__subsample': [0.8],
             'clf__colsample_bytree': [0.8],
             'clf__gamma': [0.1]
         }
         cv_num = 5
 
+        print("=====================================")
+        print("=          Searching Grid           =")
+        print(param_grid)
+        print("cv_num: ", cv_num)
+        print("=====================================")
+
         # small set of parameters for testing
         if not __debug__:
             print("=====================================")
-            print("=========Entering Debug Mode=========")
+            print("=        Entering Debug Mode        =")
             print("=====================================")
             param_grid = {
-                'sfs__k_features': [1, 2],
+                'sfs__k_features': [len(self.fixed_features) + 1, len(self.fixed_features) + 2],
                 'clf__n_estimators': [1, 2],
                 'clf__max_depth': [3],
                 'clf__min_child_weight': [1],
@@ -67,37 +77,71 @@ class FeatureSelector():
             cv_num = 2
 
         macro_f1_scorer = make_scorer(f1_score, average='macro')
-        
-        sfs = SFS(XGBClassifier(), 
-                k_features=20, 
-                forward=True, 
-                floating=False, 
-                verbose = 3,
-                scoring = macro_f1_scorer,
-                cv= cv_num)
-        
-        # create pipeline
-        pipe = Pipeline([('sfs', sfs), ('clf', XGBClassifier())])
 
-        # define the grid search
-        grid_search = GridSearchCV(estimator = pipe, param_grid=param_grid, cv= cv_num, scoring = macro_f1_scorer, n_jobs = -1, verbose = 3)
+        # find the corresponding index of fixed features
+        fixed_features_index = tuple()
+        for feature in self.fixed_features:
+            fixed_features_index += (self.train_data.columns.get_loc(feature), )
 
-        # get partial train data and label
-        partial_train_data, partial_train_label = self.multi_fidelity_search()
+        self.best_features = set()
 
-        # fit the grid search with data
-        grid_search.fit(partial_train_data, partial_train_label)
+        for round in range(5):
+            print("=====================================")
+            print("round: ", round)
 
-        # get the best parameters
-        best_params = grid_search.best_params_
-        print("=====================================")
-        print("best parameters: ", best_params)
+            sfs = SFS(XGBClassifier(), 
+                    k_features=20, 
+                    forward=True, 
+                    floating=False, 
+                    verbose = 3,
+                    scoring = macro_f1_scorer,
+                    n_jobs = -1,
+                    cv= cv_num,
+                    fixed_features = fixed_features_index)
+            
+            # create pipeline
+            pipe = Pipeline([('sfs', sfs), ('clf', XGBClassifier())])
 
-        # get the best features from the fitted grid search
-        best_features = grid_search.best_estimator_.named_steps['sfs'].k_feature_idx_
-        print("best features: ", best_features)
-        print("best features name: ")
-        for feature in best_features:
-            print(partial_train_data.columns[feature])
+            # define the grid search
+            grid_search = GridSearchCV(estimator = pipe, param_grid=param_grid, cv= cv_num, scoring = macro_f1_scorer, n_jobs = -1, verbose = 3)
 
-        return best_params, best_features
+            # run several times to get the best features
+            # get partial train data and label
+            partial_train_data, partial_train_label = self.multi_fidelity_search()
+
+            
+            print("=    Size of Partial Train Data     =")
+            print("data shape: ", partial_train_data.shape)
+
+            # fit the grid search with data
+            grid_search.fit(partial_train_data, partial_train_label)
+
+            # get the best parameters
+            self.best_params = grid_search.best_params_
+            print("best parameters: ", self.best_params)
+
+            # get the best features from the fitted grid search
+            best_feature_idx = grid_search.best_estimator_.named_steps['sfs'].k_feature_idx_
+            print("best features: ", best_feature_idx)
+            print("best features name: ")
+            for feature in best_feature_idx:
+                self.best_features.add(partial_train_data.columns[feature])
+                print(partial_train_data.columns[feature])
+            print("=====================================")
+
+        self.best_features = list(self.best_features)
+        print("final best features: ", self.best_features)
+        print("final best features size: ", len(self.best_features))
+
+        return self.best_params, self.best_features
+    
+    def cleansing(self):
+        # drop the features that are not selected
+        self.train_data = self.train_data[self.best_features]
+        self.test_data = self.test_data[self.best_features]
+
+    def get_train_data(self):
+        return self.train_data
+    
+    def get_test_data(self):
+        return self.test_data

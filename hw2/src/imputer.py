@@ -13,6 +13,10 @@ class Imputer():
         self.merged_df = pd.concat([self.train_data, self.test_data])
 
     def impute(self):
+        print("=====================================")
+        print("=          Imputation               =")
+        print("=       using KNN Imputer           =")
+        print("=====================================")
         imputer = KNNImputer(n_neighbors=self.k)
         imputed_data = imputer.fit_transform(self.merged_df)
         self.merged_df = pd.DataFrame(imputed_data, columns=self.merged_df.columns)

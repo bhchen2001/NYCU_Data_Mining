@@ -55,6 +55,10 @@ class Preprocessing():
                           'solid_tumor_with_metastasis']
         # option1: drop the categorical features
 
+        print("=====================================")
+        print("drop non-binary categorical features")
+        print("=====================================")
+
         # replace male to 0 and female to 1
         self.train_data['gender'].replace({'M': 0, 'F': 1}, inplace=True)
         self.test_data['gender'].replace({'M': 0, 'F': 1}, inplace=True)
@@ -102,6 +106,10 @@ class Preprocessing():
         print("=====================================")
 
     def normalize(self):
+        print("=====================================")
+        print("=          normalization            =")
+        print("=       using min max scaler        =")
+        print("=====================================")
         # min max scaler for each feature
         scaler = MinMaxScaler()
         # fit the scalar with merged data
