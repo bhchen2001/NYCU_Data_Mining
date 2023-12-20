@@ -1,0 +1,323 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Stylish Curriculum Vitae
+% LaTeX Template
+% Version 1.1 (September 10, 2021)
+%
+% This template originates from:
+% https://www.LaTeXTemplates.com
+%
+% Authors:
+% Stefano (https://www.kindoblue.nl)
+% Vel (vel@LaTeXTemplates.com)
+%
+% License:
+% CC BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% !TEX program = xelatex
+\documentclass[a4paper, oneside, final, 12pt]{scrartcl} % Paper options using the scrartcl class
+
+\usepackage{fontspec} % for other font
+\usepackage{xeCJK} % for chinese font
+\usepackage{hyperref} % for hyper web link
+\usepackage{multirow} % for tabular table in learning progress
+\usepackage{graphicx} % for image insersion
+\usepackage[export]{adjustbox} % for image frame
+\usepackage{setspace}
+\usepackage{array}
+% Define typographic struts, as suggested by Claudio Beccari
+%   in an article in TeX and TUG News, Vol. 2, 1993.
+\usepackage{mathptmx}
+\usepackage{scrlayer-scrpage} % Provides headers and footers configuration
+\usepackage{titlesec} % Allows creating custom \section's
+\usepackage{marvosym} % Allows the use of symbols
+\usepackage{tabularx,colortbl} % Advanced table configurations
+% \usepackage{ebgaramond} % Use the EB Garamond font
+\usepackage{microtype} % To enable letterspacing
+\usepackage{pdfpages} % for showing pdf
+\usepackage{pdflscape}
+\usepackage{enumitem}
+\usepackage{subcaption}
+\usepackage{listings}   % highlight the python code
+\usepackage{xcolor}
+\usepackage{multirow}
+\usepackage{cite} %Imports biblatex package
+\usepackage[ruled,linesnumbered]{algorithm2e}
+\newcommand\mycommfont[1]{\normalsize\ttfamily\textcolor{blue}{#1}}
+\SetCommentSty{mycommfont}
+% \usepackage[backend=bibtex,bibencoding=ascii,style=authoryear,sorting=none]{bibtex}
+% \addbibresource{reference.bib}
+% setup the margin
+\usepackage[top=1cm, bottom=1cm, right=2cm, left=2cm]{geometry}
+
+% set the style of listing code
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=true,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+% set chinese and english font
+\setmainfont{Times New Roman}
+\setCJKmainfont[AutoFakeBold=true, AutoFakeSlant=true]{標楷體}
+
+\titleformat{\section}{\Large\raggedright\bfseries}{}{0em}{}[\titlerule] % Section formatting
+\titleformat{\subsection}{\large\raggedright\bfseries}{}{0em}{}
+\titleformat{\subsubsection}{\normalsize\raggedright\bfseries}{}{0em}{}
+
+% \pagestyle{scrheadings} % Print the headers and footers on all pages
+
+% enable bold and slant chinese font
+% \xeCJKsetup{AutoFakeBold=true, AutoFakeSlant=true}
+
+% set the space at the front of paragraph
+\setlength{\parindent}{2em}
+
+% disable page number
+\pagenumbering{gobble}
+
+\newcommand{\gray}{\rowcolor[gray]{.90}} % Custom highlighting for the work experience and education sections
+\newcommand{\Tstrut}{\rule{0pt}{2.6ex}}         % = `top' strut
+\newcommand{\Bstrut}{\rule[-0.9ex]{0pt}{0pt}}   % = `bottom' strut
+\newcommand{\Tstruth}{\rule{0pt}{4ex}}         % = `top' strut for header
+\newcommand{\Bstruth}{\rule[-2.5ex]{0pt}{0pt}}   % = `bottom' strut for header
+
+%----------------------------------------------------------------------------------------
+%	FOOTER SECTION
+%----------------------------------------------------------------------------------------
+
+% \renewcommand{\headfont}{\normalfont\rmfamily\scshape} % Font settings for footer
+
+% \cofoot{
+% \fontsize{12.5}{17}\selectfont % Letter spacing and font size
+
+% \textls[150]{123 Broadway {\large\textperiodcentered} City {\large\textperiodcentered} Country 12345}\\ % Your mailing address
+% {\Large\Letter} \textls[150]{john@smith.com \ {\Large\Telefon} (000) 111-1111} % Your email address and phone number
+% }
+
+%----------------------------------------------------------------------------------------
+\begin{document}
+
+%----------------------------------------------------------------------------------------
+%	HEADER SECTION
+%----------------------------------------------------------------------------------------
+
+
+\begin{center}
+    {\fontsize{18}{30}\textbf{Data Mining Assignment 2 \\ Classification}}
+\end{center}
+
+\begin{center}
+  Bo-Han Chen (陳柏翰) \\
+  Student ID:312551074 \\
+  bhchen312551074.cs12@nycu.edu.tw
+\end{center}
+
+\section{Experiment Environment \& Usage}
+
+\begingroup
+\raggedright
+
+\subsection{Environment}
+
+\begin{itemize}
+  \item OS: Windows 10 22H2
+  \item Hardware: Intel(R) Xeon(R) Gold 6126 CPU @ 2.60GHz
+  \item Python 3.9.17
+  \item The computation time is recorded by \emph{time.process\_time()} function
+\end{itemize}
+
+\subsection{Usage}
+
+The command for executing the program of step2 \& 3 is shown as follows:
+
+\begin{lstlisting}[language=bash]
+  # step2
+  python ./apriori.py -f [Input File] -t [Task] -s [Min Support]
+  # step3
+  python ./myEclat.py -f [Input File] -s [Min Support]
+\end{lstlisting}
+
+I wrote a script for running the association rule mining program,
+which can run the algorithm with all task/support/dataset options,
+and the execution time will be recorded in the log file named \emph{result.log}.
+The experiment result in this report is 
+based on the \emph{result.log} generated by the script. \\
+Take the script of step2 for example, the script 
+\emph{run.sh} is shown as follows:
+
+\section{Step2: Apriori Algorithm}
+
+\subsection{Task1: Mining Frequent Itemsets}
+
+In this part, I add two functions \emph{writeTask1\_1} and \emph{writeTask1\_2} to
+write the frequent itemsets to the txt file based on the original Apriori algorithm. 
+The code is shown as follows:
+
+\begin{lstlisting}[language=Python]
+  def runApriori_1(data_iter, case, minSupport):
+    itemSet, transactionList = getItemSetTransactionList(data_iter)
+
+    freqSet = defaultdict(int)
+    largeSet = dict()
+    # initialize the number of candidate itemset before and after pruning
+    canNumSetBf = [len(itemSet)]
+    canNumSetAf = []
+
+    oneCSet= returnItemsWithMinSupport(itemSet, transactionList, minSupport, freqSet)
+    canNumSetAf.append(len(oneCSet))
+    
+    currentLSet = oneCSet
+    k = 2
+    while currentLSet != set([]):    
+        largeSet[k - 1] = currentLSet
+        currentLSet = joinSet(currentLSet, k)
+        # get the number of candidate itemset before pruning
+        canNumSetBf.append(len(currentLSet))
+        currentCSet= returnItemsWithMinSupport(
+            currentLSet, transactionList, minSupport, freqSet
+        )
+        # get the number of candidate itemset after pruning
+        canNumSetAf.append(len(currentCSet))
+        currentLSet = currentCSet
+        k = k + 1
+    ...
+    # write the frequent itemsets and number of candidate to file
+    writeTask1_1(toRetItems, case, minSupport)
+    writeTask1_2(canNumSetBf, canNumSetAf, case, minSupport)
+\end{lstlisting}
+
+The computation time of task1 is shown as follows 
+(concluded from the \emph{result.log} file):
+
+\begin{table}[ht]
+  \centering
+    \begin{tabular}{|*{3}{c|}}
+        \hline
+    Dataset    & Minimum Support (\%)  & Computation Time (sec)  \\
+        \hline
+    \multirow[t]{3}{*}{}           
+                & \multirow[t]{3}{*}{}0.2
+                            & 143.79 \\  \cline{2-3}
+                A& 0.5          & 6.72 \\  \cline{2-3}
+                & 1.0          & 2.79 \\  \cline{1-3}         
+                & \multirow[t]{3}{*}{}0.15
+                            & 6861.15 \\  \cline{2-3}
+                B& 0.2          & 3823.43 \\  \cline{2-3}
+                & 0.5          & 1111.96 \\  \cline{1-3}
+                & \multirow[t]{3}{*}{}1.0
+                            & 6074.08 \\  \cline{2-3}
+                C& 2.0          & 1994.86 \\  \cline{2-3}
+                & 3.0          & 729.53 \\ 
+        \hline
+    \end{tabular}
+  \caption{Computation Time of Task1}
+\end{table}
+
+The computation time of task2 and the comparison with task1 is shown as follows:
+
+\begin{table}[ht]
+  \centering
+    \begin{tabular}{|*{4}{c|}}
+        \hline
+    Dataset & Minimum Support (\%)  & Computation Time (sec) & Ratio of Computation Time (\%)  \\
+        \hline
+    \multirow[t]{3}{*}{}           
+                & \multirow[t]{3}{*}{}0.2
+                            & 157.117 & 109.26\% \\  \cline{2-4}
+                A& 0.5          & 6.65 & 98.95\% \\  \cline{2-4}
+                & 1.0          & 2.70 & 96.77\% \\  \cline{1-4}         
+                & \multirow[t]{3}{*}{}0.15
+                            & 7094.64 & 103.40\% \\  \cline{2-4}
+                B& 0.2          & 3730.72 & 97.57\% \\  \cline{2-4}
+                & 0.5          & 1137.05 & 102.25\% \\  \cline{1-4}
+                & \multirow[t]{3}{*}{}1.0
+                            & 6007.42 & 98.90\% \\  \cline{2-4}
+                C& 2.0          & 1962.21 & 98.36\% \\  \cline{2-4}
+                & 3.0          & 717.23 & 98.31\% \\ 
+        \hline
+    \end{tabular}
+  \caption{Computation Time of Task2}
+\end{table}
+
+\section{Step3: Eclat Algorithm}
+
+\subsection{Program Flow}
+
+The pueudocode of Eclat algorithm is shown as follows:
+
+\begin{algorithm}
+  \caption{My Eclat Algorithm Overview}
+  % \SetKwData{Left}{left}\SetKwData{This}{this}\SetKwData{Up}{up}
+  % \SetKwFunction{Union}{Union}
+  \SetKwFunction{EclatRecursive}{EclatRecursive}
+  \SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+
+  \Input{Transaction list $T$, minimum support $Sup_{min}$}
+  \Output{Frequent itemsets $F$}
+  \BlankLine
+  \tcp{build the vertical database $VDB$ from $T$}
+  \For{$tran$ in $T$}{
+    \For{$item$ in $tran$}{
+      append $tran$ to $VDB[item]$
+    }
+  }
+  \tcp{get the frequent 1-itemsets $F_1$ from $VDB$}
+  \For{$item$ in $VDB$}{
+    \If{$|VDB[item]| \geq Sup_{min}$}{
+      append $item$ to $F_1$
+    }
+  }
+  \tcp{mine the frequent itemsets recursively}
+  $F = []$ \\
+  \For{$item$ in $F_1$}{
+    \EclatRecursive{$item$, $VDB[item]$, $idx(item)$}
+  }
+\end{algorithm}
+
+\begin{algorithm}
+  \caption{EclatRecursive Function}
+  \SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+
+  \Input{frequent itemset $i$, tid set $SET_{i}$, index of $i$'s last item $IDX_{i}$}
+  \BlankLine
+  \For{$j\leftarrow IDX_{i} + 1$ \KwTo $|F_1|$}{
+    $SET_{ij} = SET_i \cap VDB[j]$ \\
+    \If{$|SET_{ij}| \geq Sup_{min}$}{
+      $i_{new} = i \cup F_1[j]$ \\
+      append $i_{new}$ to $F$ \\
+      \EclatRecursive{$i_{new}$, $SET_{ij}$, $j$}
+    }
+  }
+\end{algorithm}
+
+\newpage
+
+reftest\cite{zaki1997new}
+
+\endgroup
+
+\bibliographystyle{unsrt} % We choose the "plain" reference style
+\bibliography{reference} % Entries are in the "references.bib" file
+
+\end{document}
