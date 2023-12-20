@@ -55,18 +55,18 @@ class Preprocessing():
                           'solid_tumor_with_metastasis']
         # option1: drop the categorical features
 
-        print("=====================================")
-        print("drop non-binary categorical features")
-        print("=====================================")
+        # print("=====================================")
+        # print("drop non-binary categorical features")
+        # print("=====================================")
 
         # replace male to 0 and female to 1
         self.train_data['gender'].replace({'M': 0, 'F': 1}, inplace=True)
         self.test_data['gender'].replace({'M': 0, 'F': 1}, inplace=True)
 
         # drop non-binary categorical features
-        non_binary_feature = list(set(categorical_feature) - set(binary_feature))
-        self.train_data = self.train_data.drop(non_binary_feature, axis=1)
-        self.test_data = self.test_data.drop(non_binary_feature, axis=1)
+        # non_binary_feature = list(set(categorical_feature) - set(binary_feature))
+        # self.train_data = self.train_data.drop(non_binary_feature, axis=1)
+        # self.test_data = self.test_data.drop(non_binary_feature, axis=1)
 
         # option2: use one-hot encoding
         # self.train_data = pd.get_dummies(self.train_data, columns=categorical_feature)
@@ -74,6 +74,11 @@ class Preprocessing():
 
         # option3: use frequency encoding
         # consider both train and test data
+        # print("=====================================")
+        # print("=          Frequency Encoding       =")
+        # # print("Only Non-binary categorical features")
+        # print("=====================================")
+        # # non_binary_feature = list(set(categorical_feature) - set(binary_feature))
         # for feature in categorical_feature:
         #     freq = pd.concat([self.train_data[feature], self.test_data[feature]]).value_counts()
         #     self.train_data[feature] = self.train_data[feature].map(freq)
@@ -81,11 +86,27 @@ class Preprocessing():
 
         # option4: combining frequency encoding and label encoding
         # count the died sum for each category
+        # print("=====================================")
+        # print("=     Frequency / Label Encoding    =")
+        # print("Only Non-binary categorical features")
+        # print("=====================================")
         # labeled_train_data = pd.concat([self.train_data, self.train_label], axis=1)
-        # for feature in categorical_feature:
+        # non_binary_feature = list(set(categorical_feature) - set(binary_feature))
+        # for feature in non_binary_feature:
         #     freq = labeled_train_data.groupby(feature)['has_died'].sum()
         #     self.train_data[feature] = self.train_data[feature].map(freq)
         #     self.test_data[feature] = self.test_data[feature].map(freq)
+
+        # option5: label encoding
+        print("=====================================")
+        print("=            Label Encoding         =")
+        print("=====================================")
+        labeled_train_data = pd.concat([self.train_data, self.train_label], axis=1)
+        for feature in categorical_feature:
+            mean = labeled_train_data.groupby(feature)['has_died'].mean()
+            self.train_data[feature] = self.train_data[feature].map(mean)
+            self.test_data[feature] = self.test_data[feature].map(mean)
+
 
     def data_details(self):
         # show the details and information of dataset

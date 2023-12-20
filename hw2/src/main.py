@@ -26,20 +26,23 @@ if __name__ == '__main__':
     # feature selection
     my_feature_selector = FeatureSelector(train_data, train_label, test_data)
     print("Feature Selection Started")
+    fixed_features = my_feature_selector.get_fixed_features()
+    print("Fixed Features Completed")
+    print(fixed_features)
     best_params, best_features = my_feature_selector.selector()
     print("Feature Selection Completed")
     my_feature_selector.cleansing()
     train_data, test_data = my_feature_selector.get_train_data(), my_feature_selector.get_test_data()
 
     # imbalancing handle
-    my_imbalance_handle = ImbalanceHandle(train_data, train_label)
-    print("Imbalance Handle Started")
-    my_imbalance_handle.imbalance_handle()
-    print("Imbalance Handle Completed")
-    train_data, train_label = my_imbalance_handle.get_train_data(), my_imbalance_handle.get_train_label()
+    # my_imbalance_handle = ImbalanceHandle(train_data, train_label)
+    # print("Imbalance Handle Started")
+    # my_imbalance_handle.imbalance_handle()
+    # print("Imbalance Handle Completed")
+    # train_data, train_label = my_imbalance_handle.get_train_data(), my_imbalance_handle.get_train_label()
 
     # training
-    my_model = Model(train_data, train_label, test_data, test_patient_id)
+    my_model = Model(train_data, train_label, test_data, test_patient_id, fixed_features)
     print("Searching Started")
     my_model.search_grid()
     print("Searching Completed")

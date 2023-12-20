@@ -14,8 +14,53 @@ class FeatureSelector():
         self.test_data = test_data
         self.best_params = None
         self.best_features = None
+        self.fixed_features = None
 
-        self.fixed_features = ['gcs_motor_apache', 'gcs_verbal_apache', 'ventilated_apache', 'd1_sysbp_min', 'd1_temp_min', 'apache_4a_hospital_death_prob', 'd1_spo2_min', 'd1_mbp_noninvasive_min']
+    def get_fixed_features(self, f = 16):
+        full_train = self.train_data.copy()
+        full_train['has_died'] = self.train_label
+
+        # calculate the correlation between each feature and the label
+        label_corr = full_train.corr()['has_died'].abs().sort_values(ascending=False)
+
+        # get the top f features
+        top_f_features = label_corr[:f].index.tolist()
+        top_f_features.remove('has_died')
+
+        # correlation between features
+        feature_corr = full_train[top_f_features].corr().abs()
+
+        # for each feature, find the feature that has the highest correlation with it
+        feature_to_remove = set()
+        feature_to_keep = []
+        for feature in top_f_features:
+            if feature in feature_to_remove or feature in feature_to_keep:
+                continue
+            # correlation b/w feature and other features
+            corr = feature_corr[feature].drop(feature)
+            # find the feature that has the highest correlation with label
+            corr = corr[corr > 0.8]
+            max_feature, max_corr = feature, label_corr[feature]
+            for f in corr.index:
+                if label_corr[f] > max_corr:
+                    max_feature = f
+                    max_corr = label_corr[f]
+            for f in corr.index:
+                if f != max_feature:
+                    feature_to_remove.add(f)
+            if feature != max_feature:
+                feature_to_remove.add(feature)
+            if max_feature not in feature_to_keep:
+                feature_to_keep.append(max_feature)
+
+        print("=====================================")
+        print("=          Fixed Features          =")
+        print("length: ", len(feature_to_keep))
+        print(feature_to_keep)
+        print("=====================================")
+
+        self.fixed_features = feature_to_keep
+        return feature_to_keep
 
     def multi_fidelity_search(self):
         # get the full train data
@@ -38,15 +83,15 @@ class FeatureSelector():
 
         return partial_train_data, partial_train_label
 
-    def selector(self, k = 30):
+    def selector(self, k = 25):
         # option1: use SFS combining with XGBoost
         # define the parameter grid of classifier and feature selector
         param_grid = {
             'sfs__k_features': [k],
-            'clf__n_estimators': [6000],
+            'clf__n_estimators': [12000],
             'clf__max_depth': [3],
             'clf__min_child_weight': [1],
-            'clf__learning_rate': [0.001, 0.1],
+            'clf__learning_rate': [0.001],
             'clf__subsample': [0.8],
             'clf__colsample_bytree': [0.8],
             'clf__gamma': [0.1]

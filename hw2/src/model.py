@@ -5,15 +5,20 @@ from sklearn.model_selection import GridSearchCV
 from sklearn import feature_selection
 from mlxtend.feature_selection import SequentialFeatureSelector as SFS
 from mlxtend.feature_selection import ExhaustiveFeatureSelector as EFS
+from sklearn.utils.class_weight import compute_class_weight
 
 import pandas as pd
 
 class Model():
-    def __init__(self, train_data, train_label, test_data, test_patient_id):
+    def __init__(self, train_data, train_label, test_data, test_patient_id, fixed_features):
         self.train_data = train_data
         self.train_label = train_label
         self.test_data = test_data
         self.test_patient_id = test_patient_id
+        self.fixed_features = fixed_features
+
+        # num of has died = 0 / num of has died = 1
+        self.class_weight = self.train_label['has_died'].value_counts()[0] / self.train_label['has_died'].value_counts()[1]
 
         self.best_params = None
         self.best_features = None
@@ -24,14 +29,16 @@ class Model():
     def search_grid(self):
         # define the parameter grid of classifier and feature selector
         param_grid = {
-            'sfs__k_features': [15, 20, 25],
-            'clf__n_estimators': [6000, 10000],
+            'sfs__k_features': [10, 15, 20],
+            'clf__n_estimators': [8000, 10000, 12000],
             'clf__max_depth': [3],
             'clf__min_child_weight': [1],
-            'clf__learning_rate': [0.001, 0.1],
+            'clf__learning_rate': [0.001, 0.01],
             'clf__subsample': [0.8],
             'clf__colsample_bytree': [0.8],
-            'clf__gamma': [0.1]
+            'clf__gamma': [0.1],
+            'clf__scale_pos_weight': [3, 5, 7],
+            'clf__random_state': [42]
         }
         cv_num = 5
 
@@ -41,14 +48,16 @@ class Model():
             print("=        Entering Debug Mode        =")
             print("=====================================")
             param_grid = {
-                'sfs__k_features': [2, 3],
+                'sfs__k_features': [len(self.fixed_features) + 1, len(self.fixed_features) + 2],
                 'clf__n_estimators': [1, 2],
                 'clf__max_depth': [3],
                 'clf__min_child_weight': [1],
                 'clf__learning_rate': [0.001],
                 'clf__subsample': [0.8],
                 'clf__colsample_bytree': [0.8],
-                'clf__gamma': [0.1]
+                'clf__gamma': [0.1],
+                'clf__scale_pos_weight': [3, self.class_weight],
+                'clf__random_state': [42]
             }
             cv_num = 2
 
@@ -60,6 +69,11 @@ class Model():
 
         macro_f1_scorer = make_scorer(f1_score, average='macro')
 
+        # find the corresponding index of fixed features
+        fixed_features_index = tuple()
+        for feature in self.fixed_features:
+            fixed_features_index += (self.train_data.columns.get_loc(feature), )
+
         # define the classifier and feature selector
         clf = XGBClassifier()
         sfs = SFS(clf, 
@@ -69,7 +83,8 @@ class Model():
                 verbose = 3,
                 scoring = macro_f1_scorer,
                 n_jobs = -1,
-                cv= cv_num)
+                cv= cv_num,
+                fixed_features = fixed_features_index)
         
         # create pipeline
         pipe = Pipeline([('sfs', sfs), ('clf', clf)])
@@ -98,12 +113,6 @@ class Model():
         print(grid_search.best_estimator_.steps[0][1].k_feature_names_)
         print("=====================================")
 
-        # print the best classifier
-        print("=====================================")
-        print("=          Best Classifier          =")
-        print(grid_search.best_estimator_.steps[1][1])
-        print("=====================================")
-
         # get the best parameters
         self.best_params = grid_search.best_params_
 
@@ -126,7 +135,9 @@ class Model():
                                       learning_rate = self.best_params['clf__learning_rate'],
                                       subsample = self.best_params['clf__subsample'],
                                       colsample_bytree = self.best_params['clf__colsample_bytree'],
-                                      gamma = self.best_params['clf__gamma'])
+                                      gamma = self.best_params['clf__gamma'],
+                                      scale_pos_weight = self.best_params['clf__scale_pos_weight'],
+                                      random_state = self.best_params['clf__random_state'])
         self.best_clf.fit(self.train_data, self.train_label)
     
     def predict(self):
