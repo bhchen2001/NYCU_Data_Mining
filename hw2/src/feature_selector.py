@@ -6,6 +6,8 @@ from xgboost import XGBClassifier
 from sklearn.metrics import f1_score, make_scorer
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import GridSearchCV
+from scipy import stats
+from sklearn.decomposition import PCA
 
 class FeatureSelector():
     def __init__(self, train_data, train_label, test_data):
@@ -16,12 +18,36 @@ class FeatureSelector():
         self.best_features = None
         self.fixed_features = None
 
+    def pca_pair(self):
+        # find the correlation between features
+        feature_corr = self.train_data.corr().abs()
+        # for each feature, find other features that have correlation > 0.8 with it
+        # and compose a set for each correlation pair
+        corr_pair = []
+        for feature in feature_corr.columns:
+            corr = feature_corr[feature].drop(feature)
+            corr = corr[corr > 0.8]
+            for f in corr.index:
+                corr_pair.add(tuple(sorted([feature, f])))
+        
+
     def get_fixed_features(self, f = 16):
         full_train = self.train_data.copy()
         full_train['has_died'] = self.train_label
 
         # calculate the correlation between each feature and the label
-        label_corr = full_train.corr()['has_died'].abs().sort_values(ascending=False)
+        # label_corr = full_train.corr()['has_died'].abs().sort_values(ascending=False)
+
+        # calculate the point biserial correlation between each feature and the label
+        label_corr = pd.Series(index = full_train.columns)
+        for feature in full_train.columns:
+            label_corr[feature] = stats.pointbiserialr(full_train[feature], full_train['has_died'])[0]
+        label_corr = label_corr.abs().sort_values(ascending=False)
+
+        print("=====================================")
+        print("=          Label Correlation        =")
+        print(label_corr)
+        print("=====================================")
 
         # get the top f features
         top_f_features = label_corr[:f].index.tolist()
