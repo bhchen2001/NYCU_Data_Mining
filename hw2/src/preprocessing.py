@@ -78,7 +78,7 @@ class Preprocessing():
         # print("=          Frequency Encoding       =")
         # # print("Only Non-binary categorical features")
         # print("=====================================")
-        # # non_binary_feature = list(set(categorical_feature) - set(binary_feature))
+        # non_binary_feature = list(set(categorical_feature) - set(binary_feature))
         # for feature in categorical_feature:
         #     freq = pd.concat([self.train_data[feature], self.test_data[feature]]).value_counts()
         #     self.train_data[feature] = self.train_data[feature].map(freq)
@@ -100,8 +100,10 @@ class Preprocessing():
         # option5: label encoding
         print("=====================================")
         print("=            Label Encoding         =")
+        # print("Only Non-binary categorical features")
         print("=====================================")
         labeled_train_data = pd.concat([self.train_data, self.train_label], axis=1)
+        # non_binary_feature = list(set(categorical_feature) - set(binary_feature))
         for feature in categorical_feature:
             mean = labeled_train_data.groupby(feature)['has_died'].mean()
             self.train_data[feature] = self.train_data[feature].map(mean)
